@@ -1,0 +1,23 @@
+{
+  "name": "Cypher Technologies Admin Portal",
+  "short_name": "Cypher Admin",
+  "description": "Cypher Technologies internal operations portal.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07100d",
+  "theme_color": "#07100d",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/brand/cypher-logo-light.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ]
+}

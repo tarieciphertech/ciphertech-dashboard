@@ -1,109 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import {
-  Activity, BarChart3, Bell, BriefcaseBusiness, ChevronRight, CircleUserRound, ClipboardList,
-  FileText, FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, PanelLeftClose,
-  Search, Settings, ShieldCheck, Users, X, Wrench
-} from 'lucide-react'
+import { Activity, BarChart3, Bell, BriefcaseBusiness, ChevronRight, CircleUserRound, ClipboardList, FileText, FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, Search, Settings, ShieldCheck, Users, X, Wrench } from 'lucide-react'
 import { useAuth } from './auth/AuthProvider'
 import { getDashboardData } from './lib/data'
 import { isSupabaseConfigured } from './lib/supabase'
+import TeamPage from './components/TeamPage'
 
-const nav = [
-  ['/', 'Overview', LayoutDashboard],
-  ['/inquiries', 'Inquiries', MessageSquare],
-  ['/requests', 'Service Requests', ClipboardList],
-  ['/projects', 'Projects', FolderKanban],
-  ['/services', 'Services', Wrench],
-  ['/customers', 'Customers', Users],
-  ['/tickets', 'Tickets', BriefcaseBusiness],
-  ['/team', 'Team', CircleUserRound],
-  ['/files', 'Files', FileText],
-  ['/notifications', 'Notifications', Bell],
-  ['/reports', 'Reports', BarChart3],
-  ['/settings', 'Settings', Settings],
-]
+const nav = [['/', 'Overview', LayoutDashboard], ['/inquiries', 'Inquiries', MessageSquare], ['/requests', 'Service Requests', ClipboardList], ['/projects', 'Projects', FolderKanban], ['/services', 'Services', Wrench], ['/customers', 'Customers', Users], ['/tickets', 'Tickets', BriefcaseBusiness], ['/team', 'Team', CircleUserRound], ['/files', 'Files', FileText], ['/notifications', 'Notifications', Bell], ['/reports', 'Reports', BarChart3], ['/settings', 'Settings', Settings]]
 
-function Login() {
-  const { signIn } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
-
-  async function submit(event) {
-    event.preventDefault()
-    setBusy(true); setError('')
-    try { await signIn(email.trim(), password); navigate('/') }
-    catch (err) { setError(err.message || 'Unable to sign in.') }
-    finally { setBusy(false) }
-  }
-
-  return <div className="auth-shell">
-    <div className="auth-grid" />
-    <form className="login-card" onSubmit={submit}>
-      <div className="brand-mark"><span>⚡</span> CYPHER TECHNOLOGIES</div>
-      <p className="eyebrow">INTERNAL OPERATIONS</p>
-      <h1>Secure staff access</h1>
-      <p className="muted">Sign in with an authorized staff or administrator account.</p>
-      {!isSupabaseConfigured && <div className="alert warning">Authentication is not configured. Add the Supabase environment variables before deployment.</div>}
-      {error && <div className="alert danger">{error}</div>}
-      <label>Email<input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="username" required /></label>
-      <label>Password<input value={password} onChange={(e) => setPassword(e.target.value)} type="password" autoComplete="current-password" required /></label>
-      <button className="primary full" disabled={busy || !isSupabaseConfigured}>{busy ? 'Signing in…' : 'Sign in'} <ChevronRight size={17} /></button>
-      <div className="security-note"><ShieldCheck size={16}/> Access is controlled by Supabase Auth, profile roles and database RLS.</div>
-    </form>
-  </div>
-}
-
-function Shell({ children }) {
-  const { profile, signOut } = useAuth()
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const location = useLocation()
-  const current = nav.find(([path]) => path === location.pathname) || nav[0]
-  const initials = (profile?.full_name || profile?.name || profile?.email || 'CT').split(' ').map((x) => x[0]).join('').slice(0, 2).toUpperCase()
-
-  return <div className="app-shell">
-    <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
-      <div className="sidebar-head"><div className="brand-mark"><span>⚡</span> CYPHER</div><button className="icon-btn mobile-only" onClick={() => setMobileOpen(false)}><X size={19}/></button></div>
-      <div className="portal-label">ADMIN CONSOLE <span>v1</span></div>
-      <nav>{nav.map(([path, label, Icon]) => <NavLink key={path} to={path} end={path === '/'} onClick={() => setMobileOpen(false)} className={({isActive}) => isActive ? 'active' : ''}><Icon size={18}/><span>{label}</span></NavLink>)}</nav>
-      <div className="sidebar-foot"><div className="profile-mini"><div className="avatar">{initials}</div><div><strong>{profile?.full_name || profile?.name || 'Staff member'}</strong><small>{profile?.role || 'staff'}</small></div></div><button className="logout" onClick={() => signOut()}><LogOut size={17}/> Sign out</button></div>
-    </aside>
-    {mobileOpen && <button className="scrim" onClick={() => setMobileOpen(false)} aria-label="Close navigation" />}
-    <main className="main">
-      <header className="topbar"><button className="icon-btn mobile-only" onClick={() => setMobileOpen(true)}><Menu size={21}/></button><div><span className="crumb">CYPHER / INTERNAL</span><h2>{current[1]}</h2></div><div className="top-actions"><button className="icon-btn"><Search size={18}/></button><button className="icon-btn"><Bell size={18}/></button><div className="status"><i/> Systems online</div></div></header>
-      <section className="content">{children}</section>
-    </main>
-  </div>
-}
-
-function Protected() { const { session, loading, profile } = useAuth(); if (loading) return <div className="loading">Loading secure workspace…</div>; if (!session) return <Navigate to="/login" replace />; if (!['admin','staff'].includes(profile?.role)) return <Unauthorized />; return <Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/inquiries" element={<ResourcePage title="Inquiries" description="Client enquiries submitted through the public website." table="inquiries" />} /><Route path="/requests" element={<ResourcePage title="Service Requests" description="Work requests and service demand awaiting staff action." table="inquiries" />} /><Route path="/projects" element={<ResourcePage title="Projects" description="Manage active and completed Cypher Technologies projects." table="projects" />} /><Route path="/services" element={<ResourcePage title="Services" description="Manage the services presented by the public website." table="services" />} /><Route path="/customers" element={<ResourcePage title="Customers" description="Customer records and relationship context." table="profiles" />} /><Route path="/tickets" element={<ResourcePage title="Tickets" description="Internal support and operational tickets." table="tickets" />} /><Route path="/team" element={<ResourcePage title="Team" description="Authorized staff and administrator profiles." table="profiles" />} /><Route path="/files" element={<ResourcePage title="Files" description="Shared project and operational files." table="files" />} /><Route path="/notifications" element={<ResourcePage title="Notifications" description="Operational notifications and system events." table="notifications" />} /><Route path="/reports" element={<Placeholder title="Reports" description="Reporting workspace is ready for real database-backed reports." />} /><Route path="/settings" element={<Placeholder title="Settings" description="Portal configuration and account settings." />} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell> }
-
-function Unauthorized() { return <div className="auth-shell"><div className="login-card"><div className="brand-mark"><span>⚡</span> CYPHER TECHNOLOGIES</div><p className="eyebrow">ACCESS DENIED</p><h1>Unauthorized account</h1><p className="muted">Your account is authenticated, but it does not have an admin or staff role.</p><button className="primary full" onClick={() => location.href = '/login'}>Return to sign in</button></div></div> }
-
-function Dashboard() {
-  const [state, setState] = useState({ counts: {}, inquiries: [], errors: [], loading: true })
-  useEffect(() => { let mounted = true; getDashboardData().then((data) => mounted && setState({...data, loading:false})); return () => { mounted = false } }, [])
-  const cards = [['inquiries','Inquiries','Needs attention'],['tickets','Open tickets','Support queue'],['projects','Projects','Portfolio records'],['notifications','Notifications','System activity']]
-  return <div>
-    <div className="page-intro"><div><p className="eyebrow">COMMAND CENTER</p><h1>Good to see you.</h1><p className="muted">Live operational view of the Cypher Technologies workspace.</p></div><div className="live"><Activity size={16}/> LIVE DATA</div></div>
-    {state.errors.length > 0 && <div className="alert warning"><strong>Some data sources need attention.</strong> {state.errors[0]}</div>}
-    <div className="metric-grid">{cards.map(([key,label,sub]) => <div className="metric" key={key}><div className="metric-top"><span>{label}</span><span className="metric-icon"><Activity size={16}/></span></div><strong>{state.loading ? '—' : state.counts[key]}</strong><small>{sub}</small></div>)}</div>
-    <div className="section-grid"><section className="panel"><div className="panel-head"><div><p className="eyebrow">INBOX</p><h3>Recent inquiries</h3></div><NavLink to="/inquiries" className="text-link">View all <ChevronRight size={15}/></NavLink></div>{state.loading ? <div className="empty">Loading live records…</div> : state.inquiries.length ? <div className="table-wrap"><table><thead><tr><th>Client</th><th>Subject</th><th>Status</th></tr></thead><tbody>{state.inquiries.map((item, i) => <tr key={item.id || i}><td>{item.name || item.full_name || item.email || 'Unknown client'}</td><td>{item.subject || item.service || item.message?.slice(0,60) || 'General enquiry'}</td><td><span className="chip">{item.status || 'new'}</span></td></tr>)}</tbody></table></div> : <div className="empty">No inquiries returned yet.</div>}</section><section className="panel"><div className="panel-head"><div><p className="eyebrow">WORKFLOW</p><h3>Next actions</h3></div></div><div className="workflow"><div><span>01</span><p><strong>Review enquiries</strong><small>Respond and assign incoming client work.</small></p></div><div><span>02</span><p><strong>Keep projects current</strong><small>Update delivery status and project records.</small></p></div><div><span>03</span><p><strong>Resolve tickets</strong><small>Close operational issues with clear ownership.</small></p></div></div></section></div>
-  </div>
-}
-
-function ResourcePage({ title, description, table }) {
-  const [data, setData] = useState(null)
-  useEffect(() => { import('./lib/data').then(({getRecent}) => getRecent(table,'*',50).then(setData)) }, [table])
-  const rows = data?.data || []
-  const columns = useMemo(() => { const first = rows[0] || {}; return Object.keys(first).filter((key) => !['id','created_at','updated_at'].includes(key)).slice(0,5) }, [rows])
-  return <div><div className="page-intro"><div><p className="eyebrow">WORKSPACE</p><h1>{title}</h1><p className="muted">{description}</p></div><button className="primary">+ New record</button></div><section className="panel"><div className="panel-head"><h3>{rows.length ? `${rows.length} records loaded` : 'Records'}</h3><div className="search-box"><Search size={15}/><input placeholder="Search records" /></div></div>{data?.error ? <div className="alert danger">Unable to load {table}: {data.error.message}</div> : rows.length ? <div className="table-wrap"><table><thead><tr>{columns.map(c => <th key={c}>{c.replaceAll('_',' ')}</th>)}</tr></thead><tbody>{rows.map((row,i) => <tr key={row.id || i}>{columns.map(c => <td key={c}>{typeof row[c] === 'object' ? JSON.stringify(row[c]) : String(row[c] ?? '—')}</td>)}</tr>)}</tbody></table></div> : <div className="empty">No records available. Connect this workspace to the corresponding Supabase table and RLS policy.</div>}</section></div>
-}
-
-function Placeholder({ title, description }) { return <div><div className="page-intro"><div><p className="eyebrow">WORKSPACE</p><h1>{title}</h1><p className="muted">{description}</p></div></div><section className="panel empty large"><ShieldCheck size={28}/><h3>Foundation ready</h3><p>This module is intentionally not filled with fake data. It will be connected to real permissions, tables and server operations as the workflow is implemented.</p></section></div> }
-
-function App() { const { session } = useAuth(); return <Routes><Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} /><Route path="/*" element={<Protected />} /></Routes> }
+function Login() { const { signIn } = useAuth(); const [email,setEmail]=useState(''); const [password,setPassword]=useState(''); const [busy,setBusy]=useState(false); const [error,setError]=useState(''); const navigate=useNavigate(); async function submit(e){e.preventDefault();setBusy(true);setError('');try{await signIn(email.trim(),password);navigate('/')}catch(err){setError(err.message||'Unable to sign in.')}finally{setBusy(false)}} return <div className="auth-shell"><div className="auth-grid"/><form className="login-card" onSubmit={submit}><div className="brand-mark"><span>⚡</span> CYPHER TECHNOLOGIES</div><p className="eyebrow">INTERNAL OPERATIONS</p><h1>Secure staff access</h1><p className="muted">Sign in with an authorized staff or administrator account.</p>{!isSupabaseConfigured&&<div className="alert warning">Authentication is not configured. Add the Supabase environment variables before deployment.</div>}{error&&<div className="alert danger">{error}</div>}<label>Email<input value={email} onChange={e=>setEmail(e.target.value)} type="email" autoComplete="username" required/></label><label>Password<input value={password} onChange={e=>setPassword(e.target.value)} type="password" autoComplete="current-password" required/></label><button className="primary full" disabled={busy||!isSupabaseConfigured}>{busy?'Signing in…':'Sign in'} <ChevronRight size={17}/></button><div className="security-note"><ShieldCheck size={16}/> Access is controlled by Supabase Auth, profile roles and database RLS.</div></form></div> }
+function Shell({children}) { const {profile,signOut}=useAuth(); const [mobileOpen,setMobileOpen]=useState(false); const location=useLocation(); const current=nav.find(([path])=>path===location.pathname)||nav[0]; const initials=(profile?.full_name||profile?.name||profile?.email||'CT').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase(); return <div className="app-shell"><aside className={`sidebar ${mobileOpen?'open':''}`}><div className="sidebar-head"><div className="brand-mark"><span>⚡</span> CYPHER</div><button className="icon-btn mobile-only" onClick={()=>setMobileOpen(false)}><X size={19}/></button></div><div className="portal-label">ADMIN CONSOLE <span>v1</span></div><nav>{nav.map(([path,label,Icon])=><NavLink key={path} to={path} end={path==='/' } onClick={()=>setMobileOpen(false)} className={({isActive})=>isActive?'active':''}><Icon size={18}/><span>{label}</span></NavLink>)}</nav><div className="sidebar-foot"><div className="profile-mini"><div className="avatar">{initials}</div><div><strong>{profile?.full_name||profile?.name||'Staff member'}</strong><small>{profile?.role||'staff'}</small></div></div><button className="logout" onClick={()=>signOut()}><LogOut size={17}/> Sign out</button></div></aside>{mobileOpen&&<button className="scrim" onClick={()=>setMobileOpen(false)} aria-label="Close navigation"/>}<main className="main"><header className="topbar"><button className="icon-btn mobile-only" onClick={()=>setMobileOpen(true)}><Menu size={21}/></button><div><span className="crumb">CYPHER / INTERNAL</span><h2>{current[1]}</h2></div><div className="top-actions"><button className="icon-btn"><Search size={18}/></button><button className="icon-btn"><Bell size={18}/></button><div className="status"><i/> Systems online</div></div></header><section className="content">{children}</section></main></div> }
+function Protected(){const{session,loading,profile}=useAuth();if(loading)return <div className="loading">Loading secure workspace…</div>;if(!session)return <Navigate to="/login" replace/>;if(!['admin','staff'].includes(profile?.role))return <Unauthorized/>;return <Shell><Routes><Route path="/" element={<Dashboard/>}/><Route path="/inquiries" element={<ResourcePage title="Inquiries" description="Client enquiries submitted through the public website." table="inquiries"/>}/><Route path="/requests" element={<ResourcePage title="Service Requests" description="Work requests and service demand awaiting staff action." table="inquiries"/>}/><Route path="/projects" element={<ResourcePage title="Projects" description="Manage active and completed Cypher Technologies projects." table="projects"/>}/><Route path="/services" element={<ResourcePage title="Services" description="Manage the services presented by the public website." table="services"/>}/><Route path="/customers" element={<ResourcePage title="Customers" description="Customer records and relationship context." table="profiles"/>}/><Route path="/tickets" element={<ResourcePage title="Tickets" description="Internal support and operational tickets." table="tickets"/>}/><Route path="/team" element={<TeamPage/>}/><Route path="/files" element={<ResourcePage title="Files" description="Shared project and operational files." table="files"/>}/><Route path="/notifications" element={<ResourcePage title="Notifications" description="Operational notifications and system events." table="notifications"/>}/><Route path="/reports" element={<Placeholder title="Reports" description="Reporting workspace is ready for real database-backed reports."/>}/><Route path="/settings" element={<Placeholder title="Settings" description="Portal configuration and account settings."/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></Shell>}
+function Unauthorized(){return <div className="auth-shell"><div className="login-card"><div className="brand-mark"><span>⚡</span> CYPHER TECHNOLOGIES</div><p className="eyebrow">ACCESS DENIED</p><h1>Unauthorized account</h1><p className="muted">Your account is authenticated, but it does not have an admin or staff role.</p><button className="primary full" onClick={()=>location.href='/login'}>Return to sign in</button></div></div>}
+function Dashboard(){const[state,setState]=useState({counts:{},inquiries:[],errors:[],loading:true});useEffect(()=>{let mounted=true;getDashboardData().then(data=>mounted&&setState({...data,loading:false}));return()=>{mounted=false}},[]);const cards=[['inquiries','Inquiries','Needs attention'],['tickets','Open tickets','Support queue'],['projects','Projects','Portfolio records'],['notifications','Notifications','System activity']];return <div><div className="page-intro"><div><p className="eyebrow">COMMAND CENTER</p><h1>Good to see you.</h1><p className="muted">Live operational view of the Cypher Technologies workspace.</p></div><div className="live"><Activity size={16}/> LIVE DATA</div></div>{state.errors.length>0&&<div className="alert warning"><strong>Some data sources need attention.</strong> {state.errors[0]}</div>}<div className="metric-grid">{cards.map(([key,label,sub])=><div className="metric" key={key}><div className="metric-top"><span>{label}</span><span className="metric-icon"><Activity size={16}/></span></div><strong>{state.loading?'—':state.counts[key]}</strong><small>{sub}</small></div>)}</div><div className="section-grid"><section className="panel"><div className="panel-head"><div><p className="eyebrow">INBOX</p><h3>Recent inquiries</h3></div><NavLink to="/inquiries" className="text-link">View all <ChevronRight size={15}/></NavLink></div>{state.loading?<div className="empty">Loading live records…</div>:state.inquiries.length?<div className="table-wrap"><table><thead><tr><th>Client</th><th>Subject</th><th>Status</th></tr></thead><tbody>{state.inquiries.map((item,i)=><tr key={item.id||i}><td>{item.name||item.full_name||item.email||'Unknown client'}</td><td>{item.subject||item.service||item.message?.slice(0,60)||'General enquiry'}</td><td><span className="chip">{item.status||'new'}</span></td></tr>)}</tbody></table></div>:<div className="empty">No inquiries returned yet.</div>}</section><section className="panel"><div className="panel-head"><div><p className="eyebrow">WORKFLOW</p><h3>Next actions</h3></div></div><div className="workflow"><div><span>01</span><p><strong>Review enquiries</strong><small>Respond and assign incoming client work.</small></p></div><div><span>02</span><p><strong>Keep projects current</strong><small>Update delivery status and project records.</small></p></div><div><span>03</span><p><strong>Resolve tickets</strong><small>Close operational issues with clear ownership.</small></p></div></div></section></div></div>}
+function ResourcePage({title,description,table}){const[data,setData]=useState(null);useEffect(()=>{import('./lib/data').then(({getRecent})=>getRecent(table,'*',50).then(setData))},[table]);const rows=data?.data||[];const columns=useMemo(()=>{const first=rows[0]||{};return Object.keys(first).filter(key=>!['id','created_at','updated_at'].includes(key)).slice(0,5)},[rows]);return <div><div className="page-intro"><div><p className="eyebrow">WORKSPACE</p><h1>{title}</h1><p className="muted">{description}</p></div><button className="primary">+ New record</button></div><section className="panel"><div className="panel-head"><h3>{rows.length?`${rows.length} records loaded`:'Records'}</h3><div className="search-box"><Search size={15}/><input placeholder="Search records"/></div></div>{data?.error?<div className="alert danger">Unable to load {table}: {data.error.message}</div>:rows.length?<div className="table-wrap"><table><thead><tr>{columns.map(c=><th key={c}>{c.replaceAll('_',' ')}</th>)}</tr></thead><tbody>{rows.map((row,i)=><tr key={row.id||i}>{columns.map(c=><td key={c}>{typeof row[c]==='object'?JSON.stringify(row[c]):String(row[c]??'—')}</td>)}</tr>)}</tbody></table></div>:<div className="empty">No records available. Connect this workspace to the corresponding Supabase table and RLS policy.</div>}</section></div>}
+function Placeholder({title,description}){return <div><div className="page-intro"><div><p className="eyebrow">WORKSPACE</p><h1>{title}</h1><p className="muted">{description}</p></div></div><section className="panel empty large"><ShieldCheck size={28}/><h3>Foundation ready</h3><p>This module is intentionally not filled with fake data. It will be connected to real permissions, tables and server operations as the workflow is implemented.</p></section></div>}
+function App(){const{session}=useAuth();return <Routes><Route path="/login" element={session?<Navigate to="/" replace/>:<Login/>}/><Route path="/*" element={<Protected/>}/></Routes>}
 export default App

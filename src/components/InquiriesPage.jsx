@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CheckCircle2, ChevronRight, Clock3, Mail, MessageSquare, Plus, RefreshCw, Search, Trash2, UserRound, X } from 'lucide-react'
+import { CheckCircle2, ChevronRight, Clock3, Mail, MessageSquare, Plus, RefreshCw, Search, Trash2, UserRound, X, FolderKanban } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 const STATUSES = ['new', 'contacted', 'qualified', 'converted', 'closed']
 const emptyForm = { name: '', email: '', phone: '', service: '', budget: '', message: '', status: 'new', assigned_to: '', resolution: '' }
-
-function formatDate(value) { if (!value) return '—'; return new Date(value).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) }
-function StatusChip({ status }) { return <span className={`chip status-${status}`}>{status?.replace('_', ' ') || 'new'}</span> }
+const formatDate = value => value ? new Date(value).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '—'
+const StatusChip = ({ status }) => <span className={`chip status-${status}`}>{status?.replaceAll('_', ' ') || 'new'}</span>
 
 export default function InquiriesPage() {
-  const [inquiries, setInquiries] = useState([]); const [staff, setStaff] = useState([]); const [selected, setSelected] = useState(null)
-  const [notes, setNotes] = useState([]); const [activity, setActivity] = useState([]); const [note, setNote] = useState('')
-  const [search, setSearch] = useState(''); const [statusFilter, setStatusFilter] = useState('all'); const [loading, setLoading] = useState(true)
-  const [busy, setBusy] = useState(''); const [message, setMessage] = useState(''); const [error, setError] = useState(''); const [showCreate, setShowCreate] = useState(false); const [form, setForm] = useState(emptyForm)
+  const [inquiries, setInquiries] = useState([]), [staff, setStaff] = useState([]), [selected, setSelected] = useState(null)
+  const [notes, setNotes] = useState([]), [activity, setActivity] = useState([]), [note, setNote] = useState('')
+  const [search, setSearch] = useState(''), [statusFilter, setStatusFilter] = useState('all'), [loading, setLoading] = useState(true)
+  const [busy, setBusy] = useState(''), [message, setMessage] = useState(''), [error, setError] = useState('')
+  const [showCreate, setShowCreate] = useState(false), [form, setForm] = useState(emptyForm)
 
   async function load() {
     setLoading(true); setError('')
@@ -36,18 +36,43 @@ export default function InquiriesPage() {
     if (activityResult.error) setError(current => current || activityResult.error.message); else setActivity(activityResult.data || [])
   }
 
-  const filtered = useMemo(() => { const q = search.trim().toLowerCase(); return inquiries.filter(item => { const matchesStatus = statusFilter === 'all' || item.status === statusFilter; const haystack = [item.name, item.email, item.phone, item.service, item.budget, item.message].filter(Boolean).join(' ').toLowerCase(); return matchesStatus && (!q || haystack.includes(q)) }) }, [inquiries, search, statusFilter])
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    return inquiries.filter(item => {
+      const matchesStatus = statusFilter === 'all' || item.status === statusFilter
+      const haystack = [item.name, item.email, item.phone, item.service, item.budget, item.message].filter(Boolean).join(' ').toLowerCase()
+      return matchesStatus && (!q || haystack.includes(q))
+    })
+  }, [inquiries, search, statusFilter])
   const counts = useMemo(() => Object.fromEntries(['all', ...STATUSES].map(key => [key, key === 'all' ? inquiries.length : inquiries.filter(x => x.status === key).length])), [inquiries])
 
-  async function updateInquiry(patch) {
-    if (!selected) return; setBusy(selected.id); setError(''); setMessage('')
+  async function updateInquiry(patch, successMessage = 'Inquiry updated.') {
+    if (!selected) return
+    setBusy(selected.id); setError(''); setMessage('')
     const { data, error: updateError } = await supabase.from('inquiries').update(patch).eq('id', selected.id).select('*, assigned:profiles!inquiries_assigned_to_fkey(id, full_name)').single()
-    if (updateError) setError(updateError.message); else { setSelected(data); setInquiries(items => items.map(item => item.id === data.id ? data : item)); setMessage('Inquiry updated.'); await openInquiry(data) }
+    if (updateError) setError(updateError.message)
+    else { setSelected(data); setInquiries(items => items.map(item => item.id === data.id ? data : item)); setMessage(successMessage); await openInquiry(data) }
+    setBusy('')
+  }
+
+  async function convertToProject() {
+    if (!selected || selected.status !== 'qualified') return
+    if (!selected.customer_id) { setError('This inquiry is not linked to a registered customer. The customer must have an authenticated client account before conversion.'); return }
+    if (!window.confirm(`Convert ${selected.name || selected.email} into a project? The original inquiry will be preserved and linked to the new project.`)) return
+    setBusy(`convert-${selected.id}`); setError(''); setMessage('')
+    const { data, error: conversionError } = await supabase.rpc('convert_inquiry_to_project', { p_inquiry_id: selected.id, p_title: selected.service ? `${selected.service} — ${selected.name}` : `Client project — ${selected.name}`, p_description: selected.message || null })
+    if (conversionError) setError(conversionError.message)
+    else {
+      const { data: refreshed, error: refreshError } = await supabase.from('inquiries').select('*, assigned:profiles!inquiries_assigned_to_fkey(id, full_name)').eq('id', selected.id).single()
+      if (refreshError) setError(refreshError.message)
+      else { setSelected(refreshed); setInquiries(items => items.map(item => item.id === refreshed.id ? refreshed : item)); setMessage(`Converted to project: ${data?.title || 'Project created'}.`); await openInquiry(refreshed) }
+    }
     setBusy('')
   }
 
   async function addNote(event) {
-    event.preventDefault(); if (!selected || !note.trim()) return; setBusy(`note-${selected.id}`); setError(''); setMessage('')
+    event.preventDefault(); if (!selected || !note.trim()) return
+    setBusy(`note-${selected.id}`); setError(''); setMessage('')
     const user = (await supabase.auth.getUser()).data.user
     const { error: noteError } = await supabase.from('inquiry_notes').insert({ inquiry_id: selected.id, body: note.trim(), author_id: user?.id })
     if (noteError) setError(noteError.message); else { setNote(''); setMessage('Internal note added.'); await openInquiry(selected) }
@@ -58,12 +83,14 @@ export default function InquiriesPage() {
     event.preventDefault(); setBusy('create'); setError(''); setMessage('')
     const payload = { ...form, assigned_to: form.assigned_to || null }
     const { data, error: createError } = await supabase.from('inquiries').insert(payload).select('*, assigned:profiles!inquiries_assigned_to_fkey(id, full_name)').single()
-    if (createError) setError(createError.message); else { setInquiries(items => [data, ...items]); setForm(emptyForm); setShowCreate(false); setMessage('Inquiry created.'); setSelected(data); await openInquiry(data) }
+    if (createError) setError(createError.message)
+    else { setInquiries(items => [data, ...items]); setForm(emptyForm); setShowCreate(false); setMessage('Inquiry created.'); setSelected(data); await openInquiry(data) }
     setBusy('')
   }
 
   async function deleteInquiry() {
-    if (!selected || !window.confirm(`Delete the inquiry from ${selected.name || selected.email}? This cannot be undone.`)) return; setBusy(`delete-${selected.id}`); setError('')
+    if (!selected || !window.confirm(`Delete the inquiry from ${selected.name || selected.email}? This cannot be undone.`)) return
+    setBusy(`delete-${selected.id}`); setError('')
     const { error: deleteError } = await supabase.from('inquiries').delete().eq('id', selected.id)
     if (deleteError) setError(deleteError.message); else { setInquiries(items => items.filter(item => item.id !== selected.id)); setSelected(null); setMessage('Inquiry deleted.') }
     setBusy('')
@@ -78,7 +105,7 @@ export default function InquiriesPage() {
       <section className="detail-card"><div className="detail-card-head"><h3>Client message</h3><StatusChip status={selected.status}/></div><p className="inquiry-message">{selected.message || 'No message provided.'}</p><div className="client-contact"><a href={`mailto:${selected.email}`}><Mail size={15}/>{selected.email}</a>{selected.phone && <a href={`tel:${selected.phone}`}><UserRound size={15}/>{selected.phone}</a>}</div></section>
       <section className="detail-card"><div className="detail-card-head"><h3>Internal notes</h3><span>{notes.length}</span></div><form onSubmit={addNote} className="note-form"><textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Add a private staff note…"/><button className="primary" disabled={busy === `note-${selected.id}` || !note.trim()}>{busy === `note-${selected.id}` ? 'Saving…' : 'Add note'}</button></form>{notes.length ? <div className="notes-list">{notes.map(item => <article className="note-item" key={item.id}><p>{item.body}</p><small>{item.author?.full_name || 'Staff'} · {formatDate(item.created_at)}</small></article>)}</div> : <div className="empty">No internal notes yet.</div>}</section>
       <section className="detail-card"><div className="detail-card-head"><h3>Activity history</h3><Clock3 size={15}/></div>{activity.length ? <div className="activity-list">{activity.map(item => <div className="activity-item" key={item.id}><span/><div><strong>{item.action.replaceAll('_', ' ')}</strong><small>{item.actor?.full_name || 'Public submission'} · {formatDate(item.created_at)}</small></div></div>)}</div> : <div className="empty">No activity recorded.</div>}</section>
-    </div><aside className="detail-side"><section className="detail-card"><h3>Workflow</h3><label>Status<select value={selected.status} onChange={e => updateInquiry({ status: e.target.value })} disabled={busy === selected.id}>{STATUSES.map(x => <option key={x} value={x}>{x.replace('_', ' ')}</option>)}</select></label><label>Assign to<select value={selected.assigned_to || ''} onChange={e => updateInquiry({ assigned_to: e.target.value || null })} disabled={busy === selected.id}><option value="">Unassigned</option>{staff.map(person => <option key={person.id} value={person.id}>{person.full_name || person.role}</option>)}</select></label><label>Service<input value={selected.service || ''} onChange={e => setSelected({...selected, service:e.target.value})} onBlur={e => updateInquiry({ service:e.target.value })}/></label><label>Budget<input value={selected.budget || ''} onChange={e => setSelected({...selected, budget:e.target.value})} onBlur={e => updateInquiry({ budget:e.target.value })}/></label><label>Resolution<textarea value={selected.resolution || ''} onChange={e => setSelected({...selected, resolution:e.target.value})} onBlur={e => updateInquiry({ resolution:e.target.value })} placeholder="Outcome or closure details…"/></label></section><section className="detail-card"><h3>Timeline</h3><div className="timeline"><p><span>Received</span><strong>{formatDate(selected.created_at)}</strong></p><p><span>Contacted</span><strong>{formatDate(selected.contacted_at)}</strong></p><p><span>Qualified</span><strong>{formatDate(selected.qualified_at)}</strong></p><p><span>Converted</span><strong>{formatDate(selected.converted_at)}</strong></p><p><span>Closed</span><strong>{formatDate(selected.closed_at)}</strong></p><p><span>Last updated</span><strong>{formatDate(selected.updated_at)}</strong></p></div></section><button className="danger-btn" onClick={deleteInquiry} disabled={busy === `delete-${selected.id}`}><Trash2 size={15}/> {busy === `delete-${selected.id}` ? 'Deleting…' : 'Delete inquiry'}</button></aside></div></section></div>}
+    </div><aside className="detail-side"><section className="detail-card"><h3>Workflow</h3><label>Status<select value={selected.status} onChange={e => updateInquiry({ status: e.target.value })} disabled={busy === selected.id}>{STATUSES.map(x => <option key={x} value={x}>{x.replaceAll('_', ' ')}</option>)}</select></label><label>Assign to<select value={selected.assigned_to || ''} onChange={e => updateInquiry({ assigned_to: e.target.value || null })} disabled={busy === selected.id}><option value="">Unassigned</option>{staff.map(person => <option key={person.id} value={person.id}>{person.full_name || person.role}</option>)}</select></label><label>Service<input value={selected.service || ''} onChange={e => setSelected({...selected, service:e.target.value})} onBlur={e => updateInquiry({ service:e.target.value })}/></label><label>Budget<input value={selected.budget || ''} onChange={e => setSelected({...selected, budget:e.target.value})} onBlur={e => updateInquiry({ budget:e.target.value })}/></label><label>Resolution<textarea value={selected.resolution || ''} onChange={e => setSelected({...selected, resolution:e.target.value})} onBlur={e => updateInquiry({ resolution:e.target.value })} placeholder="Outcome or closure details…"/></label>{selected.status === 'qualified' && <button className="primary full" onClick={convertToProject} disabled={busy === `convert-${selected.id}`}><FolderKanban size={15}/>{busy === `convert-${selected.id}` ? 'Converting…' : 'Convert to project'}</button>}{selected.project_id && <div className="alert success">Project linked: <strong>{selected.project_id.slice(0, 8)}…</strong></div>}</section><section className="detail-card"><h3>Customer match</h3><p className="muted">{selected.customer_id ? 'This inquiry is linked to a registered customer account and is eligible for project conversion once qualified.' : 'No registered customer account matched this inquiry email yet.'}</p></section><section className="detail-card"><h3>Timeline</h3><div className="timeline"><p><span>Received</span><strong>{formatDate(selected.created_at)}</strong></p><p><span>Contacted</span><strong>{formatDate(selected.contacted_at)}</strong></p><p><span>Qualified</span><strong>{formatDate(selected.qualified_at)}</strong></p><p><span>Converted</span><strong>{formatDate(selected.converted_at)}</strong></p><p><span>Closed</span><strong>{formatDate(selected.closed_at)}</strong></p><p><span>Last updated</span><strong>{formatDate(selected.updated_at)}</strong></p></div></section><button className="danger-btn" onClick={deleteInquiry} disabled={busy === `delete-${selected.id}`}><Trash2 size={15}/> {busy === `delete-${selected.id}` ? 'Deleting…' : 'Delete inquiry'}</button></aside></div></section></div>}
     {showCreate && <div className="modal-backdrop"><form className="modal-card inquiry-form" onSubmit={createInquiry}><div className="panel-head"><div><p className="eyebrow">MANUAL ENTRY</p><h3>New inquiry</h3></div><button type="button" className="icon-btn" onClick={() => setShowCreate(false)}><X size={18}/></button></div><div className="form-two"><label>Name<input required value={form.name} onChange={e => setForm({...form, name:e.target.value})}/></label><label>Email<input required type="email" value={form.email} onChange={e => setForm({...form, email:e.target.value})}/></label></div><div className="form-two"><label>Phone<input value={form.phone} onChange={e => setForm({...form, phone:e.target.value})}/></label><label>Service<input value={form.service} onChange={e => setForm({...form, service:e.target.value})}/></label></div><div className="form-two"><label>Budget<input value={form.budget} onChange={e => setForm({...form, budget:e.target.value})}/></label><label>Assign to<select value={form.assigned_to} onChange={e => setForm({...form, assigned_to:e.target.value})}><option value="">Unassigned</option>{staff.map(person => <option key={person.id} value={person.id}>{person.full_name || person.role}</option>)}</select></label></div><label>Message<textarea required value={form.message} onChange={e => setForm({...form, message:e.target.value})}/></label><button className="primary full" disabled={busy === 'create'}>{busy === 'create' ? 'Creating…' : 'Create inquiry'}</button></form></div>}
   </div>
 }

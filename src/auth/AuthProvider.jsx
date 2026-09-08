@@ -3,22 +3,22 @@ import { isSupabaseConfigured, supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
 
+async function loadProfile(user) {
+  if (!user || !supabase) return null
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .maybeSingle()
+  if (error) throw error
+  return data
+}
+
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
-  async function loadProfile(user) {
-    if (!user || !supabase) return null
-    const { data, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle()
-    if (profileError) throw profileError
-    return data
-  }
 
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) {
@@ -100,6 +100,7 @@ export function AuthProvider({ children }) {
     updatePassword,
     signOut,
   }), [session, profile, loading, error])
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

@@ -1,15 +1,19 @@
 :root{
-  --cypher-bg:#07100d;
-  --cypher-surface:#08130f;
-  --cypher-surface-2:#0a1712;
-  --cypher-border:#193229;
-  --cypher-green:#37c994;
-  --cypher-green-bright:#55ffc0;
-  --cypher-green-soft:#8fffd0;
-  --cypher-text:#edf8f4;
+  --cypher-bg:#05020a;
+  --cypher-surface:rgba(255,255,255,.045);
+  --cypher-surface-2:rgba(255,255,255,.06);
+  --cypher-border:rgba(255,255,255,.10);
+  --cypher-border-strong:rgba(255,255,255,.14);
+  --cypher-cyan:#22d3ee;
+  --cypher-cyan-bright:#67e8f9;
+  --cypher-cyan-soft:#a5f3fc;
+  --cypher-purple:#8b5cf6;
+  --cypher-pink:#ec4899;
+  --cypher-text:#ffffff;
+  --cypher-muted:#d1d5db;
 }
 
-/* Official logo asset synced from cyphertech-v2. Keep the existing text in the DOM for accessibility. */
+/* Official logo asset synced from cyphertech-v2. Keep existing DOM text for accessibility. */
 .brand-mark{
   display:flex;
   align-items:center;
@@ -25,66 +29,121 @@
   height:34px;
   background:url("/brand/cypher-logo-light.webp") center/contain no-repeat;
 }
-.sidebar-head .brand-mark::before{
-  width:154px;
-  height:36px;
+.sidebar-head .brand-mark::before{width:154px;height:36px}
+.login-card .brand-mark{justify-content:center;margin-bottom:8px}
+.login-card .brand-mark::before{width:210px;height:48px}
+
+/* -------------------------------------------------------------------------
+   Official public-site design system
+   Source of truth: cyphertech-v2/src/index.css
+   ------------------------------------------------------------------------- */
+html,body{background:var(--cypher-bg);color:var(--cypher-text)}
+body,.app-shell,.loading{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background-color:var(--cypher-bg)}
+body{
+  background:
+    radial-gradient(circle at top left,rgba(34,211,238,.10),transparent 32rem),
+    radial-gradient(circle at top right,rgba(124,58,237,.12),transparent 30rem),
+    var(--cypher-bg);
 }
-.login-card .brand-mark{
-  justify-content:center;
-  margin-bottom:8px;
-}
-.login-card .brand-mark::before{
-  width:210px;
-  height:48px;
+.app-shell{
+  background:
+    radial-gradient(circle at 75% -10%,rgba(34,211,238,.10),transparent 35rem),
+    radial-gradient(circle at 95% 10%,rgba(236,72,153,.06),transparent 28rem),
+    var(--cypher-bg);
 }
 
-/* Cypher Technologies visual system */
-body,.app-shell,.loading{background-color:var(--cypher-bg)}
-.app-shell{
-  background:radial-gradient(circle at 75% -10%,rgba(55,201,148,.12),transparent 35%),var(--cypher-bg);
-}
 .sidebar{
-  background:linear-gradient(180deg,#08130f 0%,#06100c 100%);
-  border-right-color:#204237;
+  background:rgba(255,255,255,.025);
+  border-right-color:var(--cypher-border);
+  backdrop-filter:blur(16px);
 }
+.sidebar nav a{color:#d1d5db}
+.sidebar nav a:hover{color:var(--cypher-cyan-bright);background:rgba(255,255,255,.045)}
 .sidebar nav a.active{
-  background:linear-gradient(90deg,rgba(55,201,148,.20),rgba(55,201,148,.06));
-  color:var(--cypher-green-soft);
-  box-shadow:inset 2px 0 var(--cypher-green-bright);
+  background:linear-gradient(90deg,rgba(34,211,238,.14),rgba(139,92,246,.08));
+  color:var(--cypher-cyan-soft);
+  box-shadow:inset 2px 0 var(--cypher-cyan);
 }
 .topbar{
-  background:rgba(7,16,13,.90);
-  border-bottom-color:#204237;
-}
-.primary{
-  background:var(--cypher-green);
-  border-color:var(--cypher-green);
-}
-.primary:hover{background:var(--cypher-green-bright)}
-.icon-btn:hover{border-color:#2d765d;color:#cffff0}
-.live{border-color:#23644e;background:rgba(55,201,148,.08);color:var(--cypher-green-bright)}
-.metric,.panel{border-color:#1d3d32;background:linear-gradient(145deg,#0a1712,#07120e)}
-.metric-icon{color:var(--cypher-green-bright);border-color:#24513f}
-.text-link{color:#70e8b8}
-.chip{border-color:#286049;background:#0c2119;color:#79e4b8}
-.login-card{
-  border-color:#245141;
-  background:rgba(8,19,14,.96);
-  box-shadow:0 25px 90px rgba(0,0,0,.48),0 0 0 1px rgba(55,201,148,.025);
-}
-.login-card input:focus,.modal-card input:focus,.modal-card select:focus,.detail-card textarea:focus,.note-form textarea:focus,.inquiry-form textarea:focus{
-  border-color:var(--cypher-green);
-  box-shadow:0 0 0 2px rgba(55,201,148,.10);
-}
-.auth-shell{
-  background:radial-gradient(circle at 50% 12%,rgba(55,201,148,.15),transparent 34%),#050c09;
-}
-.auth-grid{
-  background-image:linear-gradient(rgba(55,201,148,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(55,201,148,.055) 1px,transparent 1px);
+  background:rgba(5,2,10,.82);
+  border-bottom-color:var(--cypher-border);
+  backdrop-filter:blur(16px);
 }
 
-/* Make the logo scale cleanly on phones and narrow admin layouts. */
+/* Primary / secondary controls mirror the public site's button primitives. */
+.primary{
+  background:var(--cypher-cyan);
+  border-color:var(--cypher-cyan);
+  color:#041015;
+  box-shadow:0 0 45px rgba(34,211,238,.20);
+}
+.primary:hover{background:var(--cypher-cyan-bright);box-shadow:0 0 55px rgba(34,211,238,.28)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--cypher-cyan-bright);
+  outline-offset:3px;
+}
+.icon-btn:hover{border-color:rgba(103,232,249,.5);color:var(--cypher-cyan-soft)}
+.live{border-color:rgba(34,211,238,.30);background:rgba(34,211,238,.10);color:var(--cypher-cyan-soft)}
+
+/* Public-site glass/card language. */
+.metric,.panel,.modal-card,.detail-card,.login-card,.auth-card{
+  border-color:var(--cypher-border);
+  background:rgba(255,255,255,.045);
+  box-shadow:none;
+}
+.metric:hover,.panel:hover{border-color:rgba(103,232,249,.35);background:rgba(255,255,255,.07)}
+.metric-icon{color:var(--cypher-cyan-bright);border-color:rgba(103,232,249,.25);background:rgba(34,211,238,.08)}
+.text-link{color:var(--cypher-cyan-soft)}
+.text-link:hover{color:#fff}
+.chip{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.045);color:var(--cypher-muted)}
+
+/* Form fields follow .field-input from the public site. */
+input,select,textarea{
+  border-color:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.055);
+  color:#fff;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:rgba(103,232,249,.70) !important;
+  box-shadow:0 0 0 2px rgba(34,211,238,.10) !important;
+  background:rgba(255,255,255,.08);
+}
+input::placeholder,textarea::placeholder{color:#6b7280}
+option{background:#071022;color:#fff}
+
+/* Auth experience uses the same dark canvas, cyan glow, glass surface and
+   restrained borders as the public website. */
+.login-card{
+  border-color:var(--cypher-border-strong);
+  background:rgba(255,255,255,.045);
+  box-shadow:0 25px 90px rgba(0,0,0,.48),0 0 45px rgba(34,211,238,.08);
+  backdrop-filter:blur(16px);
+}
+.auth-shell{
+  background:
+    radial-gradient(circle at top left,rgba(34,211,238,.10),transparent 32rem),
+    radial-gradient(circle at top right,rgba(124,58,237,.12),transparent 30rem),
+    #05020a;
+}
+.auth-grid{
+  background-image:
+    linear-gradient(rgba(34,211,238,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(139,92,246,.045) 1px,transparent 1px);
+}
+
+/* Official gradient-text language, used selectively for headings/accents. */
+.gradient-text,.brand-accent{
+  background:linear-gradient(90deg,var(--cypher-cyan),var(--cypher-purple),var(--cypher-pink));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
 @media (max-width:720px){
   .login-card .brand-mark::before{width:185px;height:44px}
   .sidebar-head .brand-mark::before{width:142px;height:33px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }

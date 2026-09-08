@@ -1,0 +1,65 @@
+name: Sync Cypher Technologies Brand Assets
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sync-brand-assets.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: brand-assets-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout admin portal
+        uses: actions/checkout@v4
+
+      - name: Download official brand assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/brand
+          base="https://raw.githubusercontent.com/tarieciphertech/cyphertech-v2/main/public/brand"
+          for asset in \
+            cypher-brand-system.webp \
+            cypher-logo-dark.webp \
+            cypher-logo-light.webp \
+            cypher-security-hero.webp \
+            cypher-services-showcase.webp; do
+            curl -fL --retry 3 --retry-delay 2 "$base/$asset" -o "public/brand/$asset"
+          done
+          curl -fL --retry 3 --retry-delay 2 \
+            "https://raw.githubusercontent.com/tarieciphertech/cyphertech-v2/main/public/favicon.svg" \
+            -o public/favicon.svg
+
+      - name: Verify downloaded assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s public/favicon.svg
+          test -s public/brand/cypher-brand-system.webp
+          test -s public/brand/cypher-logo-dark.webp
+          test -s public/brand/cypher-logo-light.webp
+          test -s public/brand/cypher-security-hero.webp
+          test -s public/brand/cypher-services-showcase.webp
+
+      - name: Commit synced assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/brand public/favicon.svg
+          if git diff --cached --quiet; then
+            echo "Brand assets are already up to date."
+            exit 0
+          fi
+          git commit -m "Sync official Cypher Technologies brand assets"
+          git push

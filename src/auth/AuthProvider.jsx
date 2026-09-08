@@ -71,9 +71,35 @@ export function AuthProvider({ children }) {
     return result.data
   }
 
+  const requestPasswordReset = async (email) => {
+    if (!supabase) throw new Error('Authentication is not configured.')
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    if (resetError) throw resetError
+  }
+
+  const updatePassword = async (password) => {
+    if (!supabase) throw new Error('Authentication is not configured.')
+    const { data, error: updateError } = await supabase.auth.updateUser({ password })
+    if (updateError) throw updateError
+    const nextProfile = await loadProfile(data.user)
+    setProfile(nextProfile)
+    return data
+  }
+
   const signOut = () => supabase?.auth.signOut()
 
-  const value = useMemo(() => ({ session, profile, loading, error, signIn, signOut }), [session, profile, loading, error])
+  const value = useMemo(() => ({
+    session,
+    profile,
+    loading,
+    error,
+    signIn,
+    requestPasswordReset,
+    updatePassword,
+    signOut,
+  }), [session, profile, loading, error])
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

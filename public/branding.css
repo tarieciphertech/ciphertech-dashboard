@@ -1,0 +1,90 @@
+:root{
+  --cypher-bg:#07100d;
+  --cypher-surface:#08130f;
+  --cypher-surface-2:#0a1712;
+  --cypher-border:#193229;
+  --cypher-green:#37c994;
+  --cypher-green-bright:#55ffc0;
+  --cypher-green-soft:#8fffd0;
+  --cypher-text:#edf8f4;
+}
+
+/* Official logo asset synced from cyphertech-v2. Keep the existing text in the DOM for accessibility. */
+.brand-mark{
+  display:flex;
+  align-items:center;
+  min-height:32px;
+  font-size:0 !important;
+  letter-spacing:0 !important;
+  color:transparent !important;
+}
+.brand-mark::before{
+  content:"";
+  display:block;
+  width:156px;
+  height:34px;
+  background:url("/brand/cypher-logo-light.webp") center/contain no-repeat;
+}
+.sidebar-head .brand-mark::before{
+  width:154px;
+  height:36px;
+}
+.login-card .brand-mark{
+  justify-content:center;
+  margin-bottom:8px;
+}
+.login-card .brand-mark::before{
+  width:210px;
+  height:48px;
+}
+
+/* Cypher Technologies visual system */
+body,.app-shell,.loading{background-color:var(--cypher-bg)}
+.app-shell{
+  background:radial-gradient(circle at 75% -10%,rgba(55,201,148,.12),transparent 35%),var(--cypher-bg);
+}
+.sidebar{
+  background:linear-gradient(180deg,#08130f 0%,#06100c 100%);
+  border-right-color:#204237;
+}
+.sidebar nav a.active{
+  background:linear-gradient(90deg,rgba(55,201,148,.20),rgba(55,201,148,.06));
+  color:var(--cypher-green-soft);
+  box-shadow:inset 2px 0 var(--cypher-green-bright);
+}
+.topbar{
+  background:rgba(7,16,13,.90);
+  border-bottom-color:#204237;
+}
+.primary{
+  background:var(--cypher-green);
+  border-color:var(--cypher-green);
+}
+.primary:hover{background:var(--cypher-green-bright)}
+.icon-btn:hover{border-color:#2d765d;color:#cffff0}
+.live{border-color:#23644e;background:rgba(55,201,148,.08);color:var(--cypher-green-bright)}
+.metric,.panel{border-color:#1d3d32;background:linear-gradient(145deg,#0a1712,#07120e)}
+.metric-icon{color:var(--cypher-green-bright);border-color:#24513f}
+.text-link{color:#70e8b8}
+.chip{border-color:#286049;background:#0c2119;color:#79e4b8}
+.login-card{
+  border-color:#245141;
+  background:rgba(8,19,14,.96);
+  box-shadow:0 25px 90px rgba(0,0,0,.48),0 0 0 1px rgba(55,201,148,.025);
+}
+.login-card input:focus,.modal-card input:focus,.modal-card select:focus,.detail-card textarea:focus,.note-form textarea:focus,.inquiry-form textarea:focus{
+  border-color:var(--cypher-green);
+  box-shadow:0 0 0 2px rgba(55,201,148,.10);
+}
+.auth-shell{
+  background:radial-gradient(circle at 50% 12%,rgba(55,201,148,.15),transparent 34%),#050c09;
+}
+.auth-grid{
+  background-image:linear-gradient(rgba(55,201,148,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(55,201,148,.055) 1px,transparent 1px);
+}
+
+/* Make the logo scale cleanly on phones and narrow admin layouts. */
+@media (max-width:720px){
+  .login-card .brand-mark::before{width:185px;height:44px}
+  .sidebar-head .brand-mark::before{width:142px;height:33px}
+}

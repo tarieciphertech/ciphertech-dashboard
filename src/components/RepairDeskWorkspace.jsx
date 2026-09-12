@@ -6,7 +6,7 @@ import RepairsPage from './RepairsPage'
 
 export default function RepairDeskWorkspace(){
  const[rows,setRows]=useState([]),[loading,setLoading]=useState(true),[error,setError]=useState('')
- const load=async()=>{setLoading(true);setError('');const{data,error:e}=await supabase.from('repair_financial_control').select('repair_id,repair_status,settlement_status,customer_total,actual_money_received,balance_due,priority').order('intake_date',{ascending:false});if(e)setError(e.message);else setRows(data||[]);setLoading(false)}
+ const load=async()=>{setLoading(true);setError('');const{data,error:e}=await supabase.from('repair_financial_control').select('repair_id,repair_status,settlement_status,customer_total,actual_money_received,balance_due').order('intake_date',{ascending:false});if(e)setError(e.message);else setRows(data||[]);setLoading(false)}
  useEffect(()=>{load()},[])
  const stats=useMemo(()=>({active:rows.filter(x=>!['completed','cancelled'].includes(x.repair_status)).length,due:rows.filter(x=>Number(x.balance_due||0)>0).length,ready:rows.filter(x=>x.settlement_status==='READY TO CLOSE').length,review:rows.filter(x=>['REVIEW','OVERPAID','COSTS INCOMPLETE'].includes(x.settlement_status)).length}),[rows])
  return <div className="workspace workspace-repairs">

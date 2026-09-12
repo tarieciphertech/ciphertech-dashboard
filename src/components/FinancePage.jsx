@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Plus, RefreshCw, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { getFinanceSummary, getRepairProfitability, money, dateTime, dateOnly } from '../lib/data'
+import { getFinanceSummary, getFinanceProfitabilitySummary, getRepairProfitability, money, dateTime, dateOnly } from '../lib/data'
 import { useAuth } from '../auth/AuthProvider'
 
 const incomeCategories=['repair_payment','project_payment','service_income','product_sale','consulting','other']
@@ -28,12 +28,13 @@ export default function FinancePage(){
   const[s,finance,p]=await Promise.all([
    getFinanceSummary(),
    supabase.from(tab).select('*').order(tab==='income'?'income_date':tab==='expenses'?'expense_date':'deduction_date',{ascending:false}).limit(100),
-   getRepairProfitability(),
+   Promise.all([getFinanceProfitabilitySummary(),getRepairProfitability()]),
   ])
-  const errors=[...(s.errors||[]),...(p.errors||[]),finance.error?.message].filter(Boolean)
-  setSummary(s);setProfitability(null)
+  const profitSummary=p[0],repairData=p[1]
+  const errors=[...(s.errors||[]),...(profitSummary.errors||[]),...(repairData.errors||[]),finance.error?.message].filter(Boolean)
+  setSummary(s);setProfitability(profitSummary.summary)
   if(errors.length)setError(errors.join(' • '))
-  setRows(finance.data||[]);setRepairs(p.rows||[]);setLoading(false)
+  setRows(finance.data||[]);setRepairs(repairData.rows||[]);setLoading(false)
  }
  useEffect(()=>{load()},[tab])
 
@@ -57,14 +58,14 @@ export default function FinancePage(){
   {message&&<div className="alert success">{message}</div>}{error&&<div className="alert danger">{error}</div>}
 
   <div className="metric-grid">
-   <div className="metric"><span>Total revenue received</span><strong>{money(profitability?.revenue_received??0)}</strong><small>All confirmed income</small></div>
+   <div className="metric"><span>Total revenue received</span><strong>{money(profitability?.revenue_received??totals.revenue)}</strong><small>All confirmed income</small></div>
    <div className="metric"><span>Repair direct costs</span><strong>{money(profitability?.repair_direct_costs??totals.costs)}</strong><small>Parts + labor + repair costs</small></div>
    <div className="metric"><span>Repair realized profit</span><strong>{money(profitability?.repair_realized_profit??totals.profit)}</strong><small>Revenue received − direct costs</small></div>
    <div className="metric"><span>Latest net position</span><strong>{money(latestDay?.net_position||0)}</strong><small>{latestDay?dateOnly(latestDay.transaction_date):'No confirmed activity'}</small></div>
   </div>
 
   <section className="panel" style={{marginBottom:18}}><div className="panel-head"><div><p className="eyebrow">REPAIR PROFITABILITY</p><h3>Revenue, direct costs and realized profit per repair</h3><p className="muted">Repair revenue comes from confirmed payments. Direct costs include parts cost, labor cost and confirmed repair-linked expenses.</p></div></div>
-   {loading?<div className="empty">Loading profitability…</div>:repairs.length?<div className="table-wrap"><table><thead><tr><th>Repair</th><th>Status</th><th>Customer total</th><th>Revenue received</th><th>Direct costs</th><th>Profit</th><th>Margin</th></tr></thead><tbody>{repairs.map(r=>{const costs=Number(r.parts_cost||0)+Number(r.labor_cost||0)+Number(r.other_direct_costs||0);const paid=Number(r.revenue_received||0);const profit=Number(r.realized_profit||0);return <tr key={r.repair_id}><td><strong>{r.customer_name||'Walk-in'}</strong><br/><small>{[r.brand,r.model].filter(Boolean).join(' ')||'Device'} · {dateOnly(r.intake_date?.slice(0,10))}</small></td><td><span className="chip">{r.repair_status}</span></td><td>{money(r.customer_total)}</td><td>{money(paid)}</td><td>{money(costs)}</td><td><strong>{paid?money(profit):'—'}</strong></td><td>{paid?`${Number(r.realized_margin_percent||0).toFixed(2)}%`:'—'}</td></tr>})}</tbody><tfoot><tr><th colSpan="3">Loaded repair totals</th><th>{money(totals.revenue)}</th><th>{money(totals.costs)}</th><th>{money(totals.profit)}</th><th>{totals.revenue?`${totals.margin.toFixed(2)}%`:'—'}</th></tr></table></div>:<div className="empty">No repair profitability records yet.</div>}
+   {loading?<div className="empty">Loading profitability…</div>:repairs.length?<div className="table-wrap"><table><thead><tr><th>Repair</th><th>Status</th><th>Customer total</th><th>Revenue received</th><th>Direct costs</th><th>Profit</th><th>Margin</th></tr></thead><tbody>{repairs.map(r=>{const costs=Number(r.parts_cost||0)+Number(r.labor_cost||0)+Number(r.other_direct_costs||0);const paid=Number(r.revenue_received||0);const profit=Number(r.realized_profit||0);return <tr key={r.repair_id}><td><strong>{r.customer_name||'Walk-in'}</strong><br/><small>{[r.brand,r.model].filter(Boolean).join(' ')||'Device'} · {dateOnly(r.intake_date?.slice(0,10))}</small></td><td><span className="chip">{r.repair_status}</span></td><td>{money(r.customer_total)}</td><td>{money(paid)}</td><td>{money(costs)}</td><td><strong>{paid?money(profit):'—'}</strong></td><td>{paid?`${Number(r.realized_margin_percent||0).toFixed(2)}%`:'—'}</td></tr>})}</tbody><tfoot><tr><th colSpan="3">Loaded repair totals</th><th>{money(totals.revenue)}</th><th>{money(totals.costs)}</th><th>{money(totals.profit)}</th><th>{totals.revenue?`${totals.margin.toFixed(2)}%`:'—'}</th></tr></tfoot></table></div>:<div className="empty">No repair profitability records yet.</div>}
   </section>
 
   <section className="panel" style={{marginBottom:18}}><div className="panel-head"><div><p className="eyebrow">BUSINESS POSITION</p><h3>Daily cash position</h3><p className="muted">This is the authoritative cash view: confirmed income − confirmed expenses − confirmed deductions.</p></div></div>{summary.daily?.length?<div className="table-wrap"><table><thead><tr><th>Date</th><th>Revenue</th><th>Expenses</th><th>Deductions</th><th>Net position</th></tr></thead><tbody>{summary.daily.map(x=><tr key={x.transaction_date}><td>{dateOnly(x.transaction_date)}</td><td>{money(x.income)}</td><td>{money(x.expenses)}</td><td>{money(x.deductions)}</td><td><strong>{money(x.net_position)}</strong></td></tr>)}</tbody></table></div>:<div className="empty">No confirmed financial activity yet.</div>}</section>

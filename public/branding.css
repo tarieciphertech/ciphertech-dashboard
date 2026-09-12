@@ -14,123 +14,38 @@
   --cypher-dim:#737b8b;
 }
 
-/* Official Cypher logo asset. The existing text remains in the DOM for accessibility. */
 .brand-mark{display:flex;align-items:center;min-height:34px;font-size:0!important;letter-spacing:0!important;color:transparent!important}
 .brand-mark::before{content:"";display:block;width:156px;height:34px;background:url("/brand/cypher-logo-light.webp") center/contain no-repeat}
 .sidebar-head .brand-mark::before{width:154px;height:36px}
 .login-card .brand-mark{justify-content:center;margin-bottom:10px}
 .login-card .brand-mark::before{width:210px;height:48px}
 
-/* -------------------------------------------------------------------------
-   Cypher Technologies product language
-   Derived from cyphertech-v2/src/index.css. This is intentionally restrained:
-   color creates identity; spacing, hierarchy and content create personality.
-   ------------------------------------------------------------------------- */
 html,body{background:var(--cypher-bg);color:var(--cypher-text)}
 body,.app-shell,.loading{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 body{background:radial-gradient(circle at 0% 0%,rgba(34,211,238,.10),transparent 32rem),radial-gradient(circle at 100% 0%,rgba(124,58,237,.12),transparent 30rem),#05020a}
 .app-shell{background:radial-gradient(circle at 75% -10%,rgba(34,211,238,.09),transparent 35rem),radial-gradient(circle at 92% 22%,rgba(236,72,153,.045),transparent 26rem),#05020a}
-
-/* Sidebar: calm, premium, not dashboard-template green. */
 .sidebar{background:rgba(5,2,10,.72);border-right-color:var(--cypher-border);backdrop-filter:blur(18px)}
-.sidebar-head{padding-bottom:22px}
-.portal-label{color:#697181}
-.portal-label span{color:var(--cypher-cyan)}
-.sidebar nav{gap:4px}
-.sidebar nav a{color:#9aa1ae;border-radius:10px;transition:color 180ms ease,background 180ms ease,transform 180ms ease}
-.sidebar nav a:hover{background:rgba(255,255,255,.045);color:#fff;transform:translateX(2px)}
-.sidebar nav a.active{background:linear-gradient(90deg,rgba(34,211,238,.14),rgba(139,92,246,.08));color:var(--cypher-cyan-soft);box-shadow:inset 2px 0 var(--cypher-cyan),0 8px 30px rgba(34,211,238,.035)}
-.sidebar-foot{border-top-color:var(--cypher-border)}
-.profile-mini strong{color:#edf0f5}
-.profile-mini small{color:#747c8b}
-.avatar{background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(139,92,246,.22));color:var(--cypher-cyan-soft);border:1px solid rgba(103,232,249,.16)}
-.logout{border-color:var(--cypher-border);color:#818896;border-radius:9px}
-.logout:hover{color:#fda4af;border-color:rgba(236,72,153,.28);background:rgba(236,72,153,.05)}
+.sidebar-head{padding-bottom:22px}.portal-label{color:#697181}.portal-label span{color:var(--cypher-cyan)}
+.sidebar nav{gap:4px}.sidebar nav a{color:#9aa1ae;border-radius:10px;transition:color 180ms ease,background 180ms ease,transform 180ms ease}.sidebar nav a:hover{background:rgba(255,255,255,.045);color:#fff;transform:translateX(2px)}.sidebar nav a.active{background:linear-gradient(90deg,rgba(34,211,238,.14),rgba(139,92,246,.08));color:var(--cypher-cyan-soft);box-shadow:inset 2px 0 var(--cypher-cyan),0 8px 30px rgba(34,211,238,.035)}
+.sidebar-foot{border-top-color:var(--cypher-border)}.profile-mini strong{color:#edf0f5}.profile-mini small{color:#747c8b}.avatar{background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(139,92,246,.22));color:var(--cypher-cyan-soft);border:1px solid rgba(103,232,249,.16)}.logout{border-color:var(--cypher-border);color:#818896;border-radius:9px}.logout:hover{color:#fda4af;border-color:rgba(236,72,153,.28);background:rgba(236,72,153,.05)}
+.topbar{background:rgba(5,2,10,.78);border-bottom-color:var(--cypher-border);backdrop-filter:blur(18px)}.crumb,.eyebrow{color:#707888}.topbar h2{color:#f3f4f7}.icon-btn{border-color:var(--cypher-border);background:rgba(255,255,255,.035);color:#8f97a5;border-radius:9px}.icon-btn:hover{border-color:rgba(103,232,249,.45);background:rgba(34,211,238,.07);color:var(--cypher-cyan-soft)}.status{color:#858d9b}.status i{background:var(--cypher-cyan);box-shadow:0 0 10px rgba(34,211,238,.65)}
+.content{padding:32px}.page-intro{position:relative;padding-bottom:18px;margin-bottom:28px}.page-intro::after{content:"";position:absolute;left:0;bottom:0;width:86px;height:2px;background:linear-gradient(90deg,var(--cypher-cyan),var(--cypher-purple),transparent);border-radius:99px}.page-intro h1{color:#fafafa;letter-spacing:-.025em}.muted{color:#858c99}.live{border-color:rgba(34,211,238,.25);background:rgba(34,211,238,.07);color:var(--cypher-cyan-soft)}
+.metric,.panel,.team-card,.detail-card,.modal-card,.login-card{border-color:var(--cypher-border);background:rgba(255,255,255,.045);box-shadow:0 16px 50px rgba(0,0,0,.12);backdrop-filter:blur(12px)}.metric,.panel{border-radius:14px}.metric{padding:18px}.metric:hover,.panel:hover,.team-card:hover{border-color:rgba(103,232,249,.25);background:rgba(255,255,255,.058)}.metric-top{color:#858c99}.metric-icon{border-color:rgba(103,232,249,.20);background:rgba(34,211,238,.06);color:var(--cypher-cyan-bright);border-radius:8px}.metric>strong{color:#fff}.metric small{color:#727a89}.panel{padding:20px}.panel-head h3{color:#f0f2f5}.text-link{color:var(--cypher-cyan-soft)}.text-link:hover{color:#fff}.chip{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.045);color:#cbd0d8}
+th{color:#747c8a;border-bottom-color:var(--cypher-border)}td{color:#b5bbc5;border-bottom-color:rgba(255,255,255,.06)}tr:hover td{background:rgba(255,255,255,.025)}.clickable-row:hover td{background:rgba(34,211,238,.035);color:#edf5f7}.table-sub{color:#747c89}
+.primary{border-color:var(--cypher-cyan);background:var(--cypher-cyan);color:#041015;border-radius:10px;box-shadow:0 0 38px rgba(34,211,238,.16);transition:transform 150ms ease,background 150ms ease,box-shadow 150ms ease}.primary:hover{background:var(--cypher-cyan-bright);box-shadow:0 0 52px rgba(34,211,238,.28);transform:translateY(-1px)}.primary:disabled{opacity:.45;box-shadow:none;transform:none}.search-box{border-color:var(--cypher-border);background:rgba(255,255,255,.035);border-radius:9px;color:#747c8b}.search-box input{color:#edf0f5}
+input,select,textarea,.login-card input,.modal-card input,.modal-card select,.role-select,.detail-side input,.detail-side select,.detail-side textarea,.note-form textarea,.detail-card textarea,.inquiry-form textarea{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#fff;border-radius:10px}input:focus,select:focus,textarea:focus,.login-card input:focus,.modal-card input:focus,.modal-card select:focus,.detail-card textarea:focus,.note-form textarea:focus,.inquiry-form textarea:focus{border-color:rgba(103,232,249,.70)!important;box-shadow:0 0 0 2px rgba(34,211,238,.10)!important;background:rgba(255,255,255,.08)}input::placeholder,textarea::placeholder{color:#616977}option{background:#071022;color:#fff}
+.workflow>div{border-bottom-color:rgba(255,255,255,.065)}.workflow>div>span{color:var(--cypher-cyan)}.workflow strong{color:#e6e9ee}.workflow small{color:#7d8491}.activity-item{border-bottom-color:rgba(255,255,255,.06)}.activity-item>span{background:var(--cypher-cyan);box-shadow:0 0 9px rgba(34,211,238,.4)}.note-item{border-left-color:var(--cypher-purple);background:rgba(139,92,246,.055)}
+.inquiry-tabs button{border-color:var(--cypher-border);background:rgba(255,255,255,.035);color:#858c99;border-radius:9px}.inquiry-tabs button.active{border-color:rgba(103,232,249,.35);background:rgba(34,211,238,.08);color:var(--cypher-cyan-soft)}.inquiry-detail{background:#07040d;border-left-color:var(--cypher-border)}.detail-head h2{color:#fafafa}.client-contact a{color:var(--cypher-cyan-soft)}
+.auth-shell{background:radial-gradient(circle at 50% 12%,rgba(34,211,238,.11),transparent 34rem),radial-gradient(circle at 82% 20%,rgba(139,92,246,.10),transparent 26rem),#05020a}.auth-grid{background-image:linear-gradient(rgba(34,211,238,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,.045) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,black,transparent 82%)}.login-card{border-color:var(--cypher-border-strong);background:rgba(255,255,255,.045);border-radius:18px;box-shadow:0 30px 100px rgba(0,0,0,.52),0 0 55px rgba(34,211,238,.06);backdrop-filter:blur(18px)}.login-card h1{color:#fff;letter-spacing:-.025em}.login-card label{color:#a2a8b3}.security-note{color:#707887}.alert{border-radius:10px}.alert.success{background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.20);color:var(--cypher-cyan-soft)}.alert.warning{background:rgba(139,92,246,.07);border-color:rgba(139,92,246,.22);color:#d8cfff}.alert.danger{background:rgba(236,72,153,.07);border-color:rgba(236,72,153,.22);color:#fecdd3}
+.gradient-text,.brand-accent{background:linear-gradient(90deg,var(--cypher-cyan),var(--cypher-purple),var(--cypher-pink));-webkit-background-clip:text;background-clip:text;color:transparent}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--cypher-cyan-bright);outline-offset:3px}
 
-/* Top bar: use hierarchy rather than heavy decoration. */
-.topbar{background:rgba(5,2,10,.78);border-bottom-color:var(--cypher-border);backdrop-filter:blur(18px)}
-.crumb,.eyebrow{color:#707888}
-.topbar h2{color:#f3f4f7}
-.icon-btn{border-color:var(--cypher-border);background:rgba(255,255,255,.035);color:#8f97a5;border-radius:9px}
-.icon-btn:hover{border-color:rgba(103,232,249,.45);background:rgba(34,211,238,.07);color:var(--cypher-cyan-soft)}
-.status{color:#858d9b}
-.status i{background:var(--cypher-cyan);box-shadow:0 0 10px rgba(34,211,238,.65)}
-
-/* Page intro: signature gradient rule adds a little life without becoming noisy. */
-.content{padding:32px}
-.page-intro{position:relative;padding-bottom:18px;margin-bottom:28px}
-.page-intro::after{content:"";position:absolute;left:0;bottom:0;width:86px;height:2px;background:linear-gradient(90deg,var(--cypher-cyan),var(--cypher-purple),transparent);border-radius:99px}
-.page-intro h1{color:#fafafa;letter-spacing:-.025em}
-.muted{color:#858c99}
-.live{border-color:rgba(34,211,238,.25);background:rgba(34,211,238,.07);color:var(--cypher-cyan-soft)}
-
-/* Cards: public-site glass treatment, with depth coming from light rather than dark blocks. */
-.metric,.panel,.team-card,.detail-card,.modal-card,.login-card{border-color:var(--cypher-border);background:rgba(255,255,255,.045);box-shadow:0 16px 50px rgba(0,0,0,.12);backdrop-filter:blur(12px)}
-.metric,.panel{border-radius:14px}
-.metric{padding:18px}
-.metric:hover,.panel:hover,.team-card:hover{border-color:rgba(103,232,249,.25);background:rgba(255,255,255,.058)}
-.metric-top{color:#858c99}
-.metric-icon{border-color:rgba(103,232,249,.20);background:rgba(34,211,238,.06);color:var(--cypher-cyan-bright);border-radius:8px}
-.metric>strong{color:#fff}
-.metric small{color:#727a89}
-.panel{padding:20px}
-.panel-head h3{color:#f0f2f5}
-.text-link{color:var(--cypher-cyan-soft)}
-.text-link:hover{color:#fff}
-.chip{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.045);color:#cbd0d8}
-
-/* Tables should feel like a working product, not a spreadsheet skin. */
-th{color:#747c8a;border-bottom-color:var(--cypher-border)}
-td{color:#b5bbc5;border-bottom-color:rgba(255,255,255,.06)}
-tr:hover td{background:rgba(255,255,255,.025)}
-.clickable-row:hover td{background:rgba(34,211,238,.035);color:#edf5f7}
-.table-sub{color:#747c89}
-
-/* Controls follow the public .btn system: cyan primary, glass secondary. */
-.primary{border-color:var(--cypher-cyan);background:var(--cypher-cyan);color:#041015;border-radius:10px;box-shadow:0 0 38px rgba(34,211,238,.16);transition:transform 150ms ease,background 150ms ease,box-shadow 150ms ease}
-.primary:hover{background:var(--cypher-cyan-bright);box-shadow:0 0 52px rgba(34,211,238,.28);transform:translateY(-1px)}
-.primary:disabled{opacity:.45;box-shadow:none;transform:none}
-.search-box{border-color:var(--cypher-border);background:rgba(255,255,255,.035);border-radius:9px;color:#747c8b}
-.search-box input{color:#edf0f5}
-
-/* Inputs: translucent like the public website, with a clear cyan focus ring. */
-input,select,textarea,.login-card input,.modal-card input,.modal-card select,.role-select,.detail-side input,.detail-side select,.detail-side textarea,.note-form textarea,.detail-card textarea,.inquiry-form textarea{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#fff;border-radius:10px}
-input:focus,select:focus,textarea:focus,.login-card input:focus,.modal-card input:focus,.modal-card select:focus,.detail-card textarea:focus,.note-form textarea:focus,.inquiry-form textarea:focus{border-color:rgba(103,232,249,.70)!important;box-shadow:0 0 0 2px rgba(34,211,238,.10)!important;background:rgba(255,255,255,.08)}
-input::placeholder,textarea::placeholder{color:#616977}
-option{background:#071022;color:#fff}
-
-/* Workflow / activity gets the cyan-purple signature sparingly. */
-.workflow>div{border-bottom-color:rgba(255,255,255,.065)}
-.workflow>div>span{color:var(--cypher-cyan)}
-.workflow strong{color:#e6e9ee}
-.workflow small{color:#7d8491}
-.activity-item{border-bottom-color:rgba(255,255,255,.06)}
-.activity-item>span{background:var(--cypher-cyan);box-shadow:0 0 9px rgba(34,211,238,.4)}
-.note-item{border-left-color:var(--cypher-purple);background:rgba(139,92,246,.055)}
-
-/* Inquiry/status language: preserve semantic colors, but keep them within the brand. */
-.inquiry-tabs button{border-color:var(--cypher-border);background:rgba(255,255,255,.035);color:#858c99;border-radius:9px}
-.inquiry-tabs button.active{border-color:rgba(103,232,249,.35);background:rgba(34,211,238,.08);color:var(--cypher-cyan-soft)}
-.inquiry-detail{background:#07040d;border-left-color:var(--cypher-border)}
-.detail-head h2{color:#fafafa}
-.client-contact a{color:var(--cypher-cyan-soft)}
-
-/* Auth: this is where the brand should feel most deliberate. */
-.auth-shell{background:radial-gradient(circle at 50% 12%,rgba(34,211,238,.11),transparent 34rem),radial-gradient(circle at 82% 20%,rgba(139,92,246,.10),transparent 26rem),#05020a}
-.auth-grid{background-image:linear-gradient(rgba(34,211,238,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,.045) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,black,transparent 82%)}
-.login-card{border-color:var(--cypher-border-strong);background:rgba(255,255,255,.045);border-radius:18px;box-shadow:0 30px 100px rgba(0,0,0,.52),0 0 55px rgba(34,211,238,.06);backdrop-filter:blur(18px)}
-.login-card h1{color:#fff;letter-spacing:-.025em}
-.login-card label{color:#a2a8b3}
-.security-note{color:#707887}
-.alert{border-radius:10px}
-.alert.success{background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.20);color:var(--cypher-cyan-soft)}
-.alert.warning{background:rgba(139,92,246,.07);border-color:rgba(139,92,246,.22);color:#d8cfff}
-.alert.danger{background:rgba(236,72,153,.07);border-color:rgba(236,72,153,.22);color:#fecdd3}
-
-/* Small signature gradient for deliberate brand moments. */
-.gradient-text,.brand-accent{background:linear-gradient(90deg,var(--cypher-cyan),var(--cypher-purple),var(--cypher-pink));-webkit-background-clip:text;background-clip:text;color:transparent}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--cypher-cyan-bright);outline-offset:3px}
-
-@media (max-width:900px){.content{padding:24px}.page-intro{padding-bottom:16px}}
-@media (max-width:720px){.login-card .brand-mark::before{width:185px;height:44px}.sidebar-head .brand-mark::before{width:142px;height:33px}.page-intro h1{font-size:25px}}
+/* Consolidated workspace structure. These classes define hierarchy, not decorative overrides. */
+.workspace-hero{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:24px;padding:24px;margin-bottom:18px;border:1px solid var(--cypher-border);border-radius:16px;background:linear-gradient(110deg,rgba(34,211,238,.07),rgba(139,92,246,.045) 55%,rgba(255,255,255,.025));box-shadow:0 18px 55px rgba(0,0,0,.14)}
+.workspace-hero h3,.finance-hero h3{margin:3px 0 5px;color:#f7f8fa;font-size:18px}.hero-value{font-size:28px;font-weight:750;letter-spacing:-.04em;color:#fff}.workspace-grid{display:grid;gap:14px;margin-bottom:18px}.workspace-grid-finance{grid-template-columns:repeat(3,minmax(0,1fr))}.workspace-grid-four{grid-template-columns:repeat(4,minmax(0,1fr))}.workspace-grid .metric{height:100%}
+.attention-strip{display:grid;grid-template-columns:minmax(170px,1fr) repeat(3,minmax(150px,1fr));gap:10px;align-items:stretch;margin-bottom:18px;padding:14px;border:1px solid var(--cypher-border);border-radius:14px;background:rgba(255,255,255,.025)}.attention-strip h3{margin:3px 0 0;font-size:15px}.attention-item{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:13px 14px;border:1px solid var(--cypher-border);border-radius:10px;color:#b9c0ca;background:rgba(255,255,255,.025)}.attention-item:hover{border-color:rgba(103,232,249,.3);color:#fff}.attention-item strong{color:#fff}
+.workspace-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;padding:4px;border-bottom:1px solid var(--cypher-border)}.workspace-tabs button{padding:11px 14px;border:0;border-bottom:2px solid transparent;background:transparent;color:#7f8794;font-weight:650;cursor:pointer}.workspace-tabs button:hover{color:#fff}.workspace-tabs button.active{color:var(--cypher-cyan-soft);border-bottom-color:var(--cypher-cyan)}
+.finance-hero{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:22px;align-items:center;padding:22px 24px;margin-bottom:14px;border:1px solid rgba(34,211,238,.18);border-radius:16px;background:linear-gradient(115deg,rgba(34,211,238,.08),rgba(255,255,255,.035))}.finance-hero>strong{font-size:30px;letter-spacing:-.04em;color:#fff}.finance-hero>svg{color:var(--cypher-cyan);opacity:.7}
+.workspace-footer-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.secondary{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--cypher-border);background:rgba(255,255,255,.035);color:#b8c0ca;border-radius:9px;padding:9px 12px;text-decoration:none}.secondary:hover{border-color:rgba(103,232,249,.3);color:#fff;background:rgba(34,211,238,.05)}.empty-state-rich{display:flex;align-items:center;gap:14px;padding:24px}.empty-state-rich>div:nth-child(2){flex:1}.empty-state-rich strong{color:#e8ebef}.empty-state-rich p{margin:4px 0 0;color:#7d8592}.empty-icon{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--cypher-border);border-radius:11px;color:var(--cypher-cyan);background:rgba(34,211,238,.05)}
+@media (max-width:900px){.content{padding:24px}.workspace-grid-four{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-hero,.finance-hero{grid-template-columns:1fr auto}.workspace-hero .secondary{grid-column:1/-1;justify-self:start}.attention-strip{grid-template-columns:1fr 1fr}.attention-strip>div:first-child{grid-column:1/-1}}
+@media (max-width:720px){.login-card .brand-mark::before{width:185px;height:44px}.sidebar-head .brand-mark::before{width:142px;height:33px}.page-intro h1{font-size:25px}.workspace-grid-finance,.workspace-grid-four{grid-template-columns:1fr}.workspace-hero,.finance-hero{grid-template-columns:1fr}.hero-value,.finance-hero>strong{font-size:24px}.attention-strip{grid-template-columns:1fr}.attention-strip>div:first-child{grid-column:auto}.empty-state-rich{align-items:flex-start;flex-wrap:wrap}.empty-state-rich>div:nth-child(2){min-width:calc(100% - 54px)}.empty-state-rich .secondary,.empty-state-rich .primary{margin-left:54px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

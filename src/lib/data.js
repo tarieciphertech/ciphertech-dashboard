@@ -27,6 +27,16 @@ export async function getFinanceSummary() {
   return { daily: daily.data || [], monthly: monthly.data || [], errors: [daily.error, monthly.error].filter(Boolean).map(x => x.message) }
 }
 
+export async function getRepairProfitability() {
+  if (!supabase) return { rows: [], errors: ['Supabase is not configured.'] }
+  const { data, error } = await supabase
+    .from('repair_profitability')
+    .select('*')
+    .order('intake_date', { ascending: false })
+    .limit(200)
+  return { rows: data || [], errors: error ? [error.message] : [] }
+}
+
 export const money = value => `BWP ${Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 export const dateTime = value => value ? new Date(value).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '—'
 export const dateOnly = value => value ? new Date(`${value}T00:00:00`).toLocaleDateString([], { dateStyle: 'medium' }) : '—'

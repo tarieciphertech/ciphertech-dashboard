@@ -9,6 +9,16 @@ const zohoUsers = [
   { full_name: 'Shelton Moyo', email: 'shelton.moyo@cyphertech.co.zw', role: 'staff', phone: '', sourceRole: 'User' },
 ]
 
+const ROLE_LABELS = {
+  admin: 'Administrator',
+  staff: 'Staff',
+  client: 'Client',
+}
+
+function roleLabel(role) {
+  return ROLE_LABELS[role] || role || 'Unknown'
+}
+
 export default function TeamPage() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -67,7 +77,7 @@ export default function TeamPage() {
         const account = byEmail.get(person.email)
         return <div className="team-card" key={person.email}>
           <div className="team-card-head"><div className="avatar">{person.full_name.split(' ').map(x => x[0]).join('').slice(0,2).toUpperCase()}</div><div><strong>{person.full_name}</strong><small>{person.email}</small></div></div>
-          <div className="team-meta"><span>{person.sourceRole}</span><span className="chip">{person.role}</span></div>
+          <div className="team-meta"><span>{person.sourceRole}</span><span className="chip">{roleLabel(account?.profile?.role || person.role)}</span></div>
           {account ? <div className="team-state"><span className="state-dot"/> {account.confirmed ? 'Active account' : 'Invitation pending'}<small>{account.last_sign_in_at ? `Last sign-in: ${new Date(account.last_sign_in_at).toLocaleString()}` : 'No sign-in recorded'}</small></div> : <button className="primary full" disabled={busy === person.email} onClick={() => invite(person)}><Mail size={15}/> {busy === person.email ? 'Sending…' : 'Send invitation'}</button>}
         </div>
       })}</div>
@@ -75,9 +85,12 @@ export default function TeamPage() {
 
     <section className="panel team-list-panel">
       <div className="panel-head"><div><p className="eyebrow">SUPABASE AUTH</p><h3>{loading ? 'Loading accounts…' : `${users.length} authenticated account${users.length === 1 ? '' : 's'}`}</h3></div></div>
-      {users.length === 0 && !loading ? <div className="empty">No authenticated accounts returned.</div> : <div className="table-wrap"><table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Last sign-in</th><th>Action</th></tr></thead><tbody>{users.map((user) => <tr key={user.id}><td><strong>{user.profile?.full_name || 'Unnamed user'}</strong><br/><small>{user.email}</small></td><td><select className="role-select" value={user.profile?.role || 'staff'} onChange={(e) => setRole(user, e.target.value)} disabled={busy === user.id}><option value="admin">admin</option><option value="staff">staff</option></select></td><td>{user.confirmed ? <span className="chip">confirmed</span> : <span className="chip">pending</span>}</td><td>{user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : '—'}</td><td>{user.profile?.role === 'admin' && <ShieldCheck size={16}/>}</td></tr>)}</tbody></table></div>}
+      {users.length === 0 && !loading ? <div className="empty">No authenticated accounts returned.</div> : <div className="table-wrap"><table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Last sign-in</th><th>Action</th></tr></thead><tbody>{users.map((user) => {
+        const actualRole = user.profile?.role || 'unknown'
+        return <tr key={user.id}><td><strong>{user.profile?.full_name || 'Unnamed user'}</strong><br/><small>{user.email}</small></td><td><select className="role-select" value={actualRole} onChange={(e) => setRole(user, e.target.value)} disabled={busy === user.id}><option value="admin">Administrator</option><option value="staff">Staff</option><option value="client">Client</option></select></td><td>{user.confirmed ? <span className="chip">confirmed</span> : <span className="chip">pending</span>}</td><td>{user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : '—'}</td><td>{actualRole === 'admin' && <ShieldCheck size={16}/>}</td></tr>
+      })}</tbody></table></div>}
     </section>
 
-    {showInvite && <div className="modal-backdrop"><form className="modal-card" onSubmit={submitInvite}><div className="panel-head"><div><p className="eyebrow">NEW ACCOUNT</p><h3>Invite team member</h3></div><button type="button" className="icon-btn" onClick={() => setShowInvite(false)}>×</button></div><label>Full name<input required value={form.full_name} onChange={e => setForm({...form, full_name:e.target.value})}/></label><label>Email<input required type="email" value={form.email} onChange={e => setForm({...form, email:e.target.value})}/></label><label>Phone<input value={form.phone} onChange={e => setForm({...form, phone:e.target.value})}/></label><label>Application role<select value={form.role} onChange={e => setForm({...form, role:e.target.value})}><option value="staff">Staff</option><option value="admin">Administrator</option></select></label><button className="primary full" disabled={busy}>{busy ? 'Sending invitation…' : 'Send invitation'}</button></form></div>}
+    {showInvite && <div className="modal-backdrop"><form className="modal-card" onSubmit={submitInvite}><div className="panel-head"><div><p className="eyebrow">NEW ACCOUNT</p><h3>Invite team member</h3></div><button type="button" className="icon-btn" onClick={() => setShowInvite(false)}>×</button></div><label>Full name<input required value={form.full_name} onChange={e => setForm({...form, full_name:e.target.value})}/></label><label>Email<input required type="email" value={form.email} onChange={e => setForm({...form, email:e.target.value})}/></label><label>Phone<input value={form.phone} onChange={e => setForm({...form, phone:e.target.value})}/></label><label>Application role<select value={form.role} onChange={e => setForm({...form, role:e.target.value})}><option value="staff">Staff</option><option value="admin">Administrator</option><option value="client">Client</option></select></label><button className="primary full" disabled={busy}>{busy ? 'Sending invitation…' : 'Send invitation'}</button></form></div>}
   </div>
 }

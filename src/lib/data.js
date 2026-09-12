@@ -27,6 +27,12 @@ export async function getFinanceSummary() {
   return { daily: daily.data || [], monthly: monthly.data || [], errors: [daily.error, monthly.error].filter(Boolean).map(x => x.message) }
 }
 
+export async function getFinanceProfitabilitySummary() {
+  if (!supabase) return { summary: null, errors: ['Supabase is not configured.'] }
+  const { data, error } = await supabase.from('finance_profitability_summary').select('*').single()
+  return { summary: data || null, errors: error ? [error.message] : [] }
+}
+
 export async function getRepairProfitability() {
   if (!supabase) return { rows: [], errors: ['Supabase is not configured.'] }
   const { data, error } = await supabase

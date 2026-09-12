@@ -59,6 +59,22 @@ export async function getRepairFinancialControl() {
   return { rows: data || [], errors: error ? [error.message] : [] }
 }
 
+export async function getRepairSettlementReporting() {
+  if (!supabase) return { rows: [], errors: ['Supabase is not configured.'] }
+  const { data, error } = await supabase
+    .from('repair_settlement_reporting')
+    .select('*')
+    .order('intake_date', { ascending: false })
+    .limit(500)
+  return { rows: data || [], errors: error ? [error.message] : [] }
+}
+
+export async function getFinanceRepairSettlementSummary() {
+  if (!supabase) return { summary: null, errors: ['Supabase is not configured.'] }
+  const { data, error } = await supabase.from('finance_repair_settlement_summary').select('*').single()
+  return { summary: data || null, errors: error ? [error.message] : [] }
+}
+
 export const money = value => `BWP ${Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 export const dateTime = value => value ? new Date(value).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '—'
 export const dateOnly = value => value ? new Date(`${value}T00:00:00`).toLocaleDateString([], { dateStyle: 'medium' }) : '—'

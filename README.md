@@ -41,6 +41,33 @@ Required profile authorization convention:
 
 The portal currently reads these shared tables: `inquiries`, `tickets`, `projects`, `services`, `notifications`, `profiles`, and `files`.
 
+## Database foundation
+
+The dashboard database foundation is now implemented in `supabase/migrations/`.
+
+The operational model supports both authenticated account customers and walk-in/non-account customers. A customer record may have a nullable `profile_id`; customer history is independent of account role changes.
+
+Core operational domains:
+
+- Customers
+- Repairs
+- Repair parts and labor
+- Repair payments and status history
+- Income, expenses and deductions
+- Existing projects plus project tasks
+- Dashboard reporting views
+
+Financial source-of-truth rules:
+
+- `income` is the authoritative income ledger.
+- `expenses` is the authoritative expense ledger.
+- `deductions` is the authoritative deductions ledger.
+- `repair_payments` is the operational payment record and links one-to-one to its generated income transaction when confirmed.
+- Dashboard totals are derived; mutable daily counters are not stored.
+- Project expenses use `expenses.project_id`; there is no duplicate project-expense ledger.
+
+The reporting layer provides `repair_balances`, `finance_daily_summary`, `finance_monthly_summary`, and `dashboard_overview` views. These use `security_invoker` so underlying RLS remains authoritative.
+
 ## Security checklist
 
 - Never commit `.env`, service-role keys, API secrets or SMTP credentials.

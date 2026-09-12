@@ -33,10 +33,26 @@ export async function getFinanceProfitabilitySummary() {
   return { summary: data || null, errors: error ? [error.message] : [] }
 }
 
+export async function getFinanceControlSummary() {
+  if (!supabase) return { summary: null, errors: ['Supabase is not configured.'] }
+  const { data, error } = await supabase.from('finance_control_summary').select('*').single()
+  return { summary: data || null, errors: error ? [error.message] : [] }
+}
+
 export async function getRepairProfitability() {
   if (!supabase) return { rows: [], errors: ['Supabase is not configured.'] }
   const { data, error } = await supabase
     .from('repair_profitability')
+    .select('*')
+    .order('intake_date', { ascending: false })
+    .limit(200)
+  return { rows: data || [], errors: error ? [error.message] : [] }
+}
+
+export async function getRepairFinancialControl() {
+  if (!supabase) return { rows: [], errors: ['Supabase is not configured.'] }
+  const { data, error } = await supabase
+    .from('repair_financial_control')
     .select('*')
     .order('intake_date', { ascending: false })
     .limit(200)

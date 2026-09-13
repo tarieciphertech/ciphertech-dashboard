@@ -4,7 +4,6 @@ import { NavLink } from 'react-router-dom'
 import { getDashboardData, money, dateTime } from '../lib/data'
 
 const label=value=>String(value||'').replaceAll('_',' ')
-const greeting=()=>{const hour=new Date().getHours();return hour<12?'Good morning':hour<18?'Good afternoon':'Good evening'}
 
 export default function Dashboard(){
  const[state,setState]=useState({overview:null,repairs:[],inquiries:[],activity:[],errors:[],loading:true})
@@ -17,7 +16,7 @@ export default function Dashboard(){
   {label:'Projects in progress',value:o.active_projects??0,to:'/projects',icon:FolderKanban},
  ],[o])
  return <div className="workspace workspace-overview">
-  <div className="page-intro"><div><p className="eyebrow">YOUR WORKDAY</p><h1>{greeting}, Tarie.</h1><p className="muted">Here’s what’s happening across CypherTech. Start with what needs your attention, then get into the work.</p></div><button className="icon-btn" onClick={load} title="Refresh overview" aria-label="Refresh overview"><RefreshCw size={16}/></button></div>
+  <div className="page-intro"><div><p className="eyebrow">YOUR WORKDAY</p><h1>Overview</h1><p className="muted">Here’s what’s happening across CypherTech. Start with what needs your attention, then get into the work.</p></div><button className="icon-btn" onClick={load} title="Refresh overview" aria-label="Refresh overview"><RefreshCw size={16}/></button></div>
   {state.errors[0]&&<div className="alert warning"><CircleAlert size={15}/>{state.errors[0]}</div>}
 
   <section className="workspace-hero"><div><p className="eyebrow">TODAY AT A GLANCE</p><h3>Where the business stands</h3><p className="muted">Money received today, less recorded expenses and deductions.</p></div><div className="hero-value">{state.loading?'—':money(o.today_net_position)}</div><NavLink to="/finance" className="secondary">See the finances <ArrowUpRight size={14}/></NavLink></section>

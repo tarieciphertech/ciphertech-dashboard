@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { getFinanceSummary, getFinanceControlSummary, getFinanceRepairSettlementSummary, getRepairFinancialControl, money, dateTime, dateOnly } from '../lib/data'
 import { useAuth } from '../auth/AuthProvider'
 import RepairSettlementReport from './RepairSettlementReport'
-import OperatingCostsPanel from './OperatingCostsPanel'
+import OperatingCostsPanel from './OperatingCostsPanelV2'
 
 const incomeCategories=['repair_payment','project_payment','service_income','product_sale','consulting','other']
 const expenseCategories=['parts','equipment','transport','internet','airtime','hosting','software','rent','utilities','marketing','office','maintenance','other']

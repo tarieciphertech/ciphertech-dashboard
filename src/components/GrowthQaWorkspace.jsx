@@ -86,7 +86,8 @@ export default function GrowthQaWorkspace() {
 
   async function updateStatus(table, id, status) {
     setError(''); setMessage('')
-    const { error: e } = await supabase.from(table).update({ status, updated_at: new Date().toISOString() }).eq('id', id)
+    const field = table === 'growth_leads' ? 'stage' : 'status'
+    const { error: e } = await supabase.from(table).update({ [field]: status, updated_at: new Date().toISOString() }).eq('id', id)
     if (e) setError(e.message)
     else { setMessage('Workflow status updated.'); await load() }
   }

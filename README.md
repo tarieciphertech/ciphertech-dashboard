@@ -75,3 +75,15 @@ The reporting layer provides `repair_balances`, `finance_daily_summary`, `financ
 - Keep admin access protected by Supabase Auth + role checks + RLS.
 - Add `https://admin.cyphertech.co.zw/**` to Supabase Auth allowed redirect URLs where required by the selected email/password recovery flow.
 - Keep the admin hostname out of search indexing.
+
+
+## Growth and QA workflow
+
+The admin portal includes a **Growth & QA** workspace for the school-systems marketing pipeline and software QA delivery.
+
+- **Marketing pipeline:** capture school, software QA and software-development opportunities; assign an owner; set the stage and next follow-up; record contact details and notes.
+- **Test cases:** link checks to a project, assign a tester, track due dates, expected/actual results, severity and evidence.
+- **QA defects:** record reproducible defects, severity, ownership, evidence and the fix/retest/closure lifecycle.
+- **Accountability:** live queues and due-follow-up / high-impact-defect counters are derived from Supabase records, not hard-coded demo data.
+
+Before using the new workspace, apply `supabase/migrations/20261020090000_growth_qa_workflow.sql` to the connected Supabase project. The migration enables RLS and limits access to authenticated admin/staff profiles through `is_staff_or_admin()`. Verify that the migration has completed successfully before deploying or using the new navigation item.

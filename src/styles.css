@@ -3,3 +3,22 @@
 @media(max-width:1050px){.metric-grid{grid-template-columns:repeat(2,1fr)}.section-grid{grid-template-columns:1fr}.sidebar{width:220px;flex-basis:220px}.main{margin-left:220px}.content{padding:22px}.detail-grid{grid-template-columns:1fr}.detail-side{display:grid;grid-template-columns:1fr 1fr}.danger-btn{grid-column:1/-1}}
 @media(max-width:760px){.sidebar{transform:translateX(-100%);transition:transform .2s;width:250px}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-only{display:grid}.scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.55);border:0;z-index:15}.topbar{padding:0 16px;height:68px}.topbar>div:nth-child(2){margin-right:auto;margin-left:10px}.top-actions .icon-btn:first-child,.status{display:none}.content{padding:18px 14px}.page-intro{align-items:flex-start;flex-direction:column}.page-intro h1{font-size:24px}.metric-grid{grid-template-columns:1fr 1fr;gap:10px}.metric{padding:13px}.metric>strong{font-size:24px;margin-top:12px}.panel{padding:13px}.search-box input{width:100px}.team-grid{grid-template-columns:1fr}.team-actions{width:100%}.inquiry-detail{padding:18px 14px}.detail-side{display:flex}.note-form{flex-direction:column;align-items:stretch}.note-form .primary{width:100%}.form-two{grid-template-columns:1fr}.inquiry-tabs{margin-right:-2px}}
 @media(max-width:440px){.metric-grid{grid-template-columns:1fr}.login-card{padding:23px}.topbar h2{font-size:14px}.search-box input{width:85px}}
+
+/* Growth and QA workspace */
+.growth-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.growth-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.growth-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.growth-tabs button{display:flex;align-items:center;gap:7px;border:1px solid #19352b;background:#09150f;color:#71877f;border-radius:7px;padding:9px 11px;font-size:11px}
+.growth-tabs button strong{margin-left:4px;color:#a7bbb4}
+.growth-tabs button.active{border-color:#2d8c6b;background:#0d241a;color:#83efc1}
+.workflow-select{max-width:155px;border:1px solid #244a3b;background:#0a1912;color:#9ce9c9;border-radius:6px;padding:6px 8px;font-size:10px}
+.workflow-select:focus{outline:1px solid #37c994}
+.growth-form{max-height:calc(100vh - 36px);overflow:auto}
+.growth-form textarea{resize:vertical;min-height:72px;width:100%;border:1px solid #1c382e;border-radius:7px;background:#07110d;color:#e2eee9;padding:10px;outline:0}
+.growth-form textarea:focus{border-color:#37c994}
+.severity-critical{color:#ff9ea7;border-color:#7a3038;background:#2a1116}
+.severity-high{color:#ffc18b;border-color:#714725;background:#26190f}
+.severity-medium{color:#f1d58a;border-color:#5a4a24;background:#211b0c}
+.severity-low{color:#8bd4ff;border-color:#24516a;background:#0b1a24}
+@media(max-width:1050px){.growth-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.growth-stats{grid-template-columns:1fr 1fr}.growth-toolbar{align-items:stretch}.growth-toolbar>.primary{width:100%}.growth-tabs{width:100%}.growth-tabs button{flex:1;justify-content:center}.workflow-select{max-width:125px}}

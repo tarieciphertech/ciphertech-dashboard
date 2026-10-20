@@ -77,4 +77,8 @@ DROP POLICY IF EXISTS qa_defects_staff_all ON public.qa_defects;
 CREATE POLICY qa_defects_staff_all ON public.qa_defects
   FOR ALL TO authenticated USING (public.is_staff_or_admin()) WITH CHECK (public.is_staff_or_admin());
 
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.growth_leads TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.qa_test_cases TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.qa_defects TO authenticated;
+
 COMMIT;
